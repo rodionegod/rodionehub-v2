@@ -790,8 +790,8 @@
 
 <section class="hero" id="top">
   <div class="hero-bg" aria-hidden="true">
-    <!-- Сюда можно вставить твой шоурил: укажи src="ссылка-на-mp4" — он сам включится вместо градиентов -->
-    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="metadata" src=""></video>
+    <!-- Сюда можно вставить твой шоурил: укажи hero.mp4 — он сам включится вместо градиентов -->
+    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="metadata" src="hero.mp4"></video>
     <div class="hero-fx" id="heroFx">
       <div class="blob bl-1"></div><div class="blob bl-2"></div><div class="blob bl-3"></div><div class="blob bl-4"></div>
     </div>
@@ -1217,14 +1217,21 @@
 
 
 
-  // hero background: use real video if src provided
+  // hero background: switch to real video only when it actually loads
   (function(){
     const v = document.getElementById('heroVideo');
     const fx = document.getElementById('heroFx');
-    if(v && v.getAttribute('src')){
+    if(!v || !v.getAttribute('src')) return;
+    v.addEventListener('loadeddata', function(){
       v.style.display = 'block';
       if(fx) fx.style.opacity = .35;
-    }
+      const p = v.play();
+      if(p && p.catch) p.catch(function(){});
+    });
+    v.addEventListener('error', function(){
+      v.style.display = 'none';
+      if(fx) fx.style.opacity = '';
+    });
   })();
 
   // sliding nav indicator
